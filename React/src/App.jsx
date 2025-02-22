@@ -1,33 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
+import { useForm } from "react-hook-form";
 function App() {
-  const [count, setCount] = useState(0)
+  const { register, handleSubmit, formState: { errors,isSubmitting } } = useForm();
+  let delay = ((d)=>{
+    return new Promise((resolve,reject)=>{
+      
+      setTimeout(()=>{resolve()},d*3000);
+    })})
+    const onSubmit = async(data) => {
+      await delay(4);
+      console.log(data);}
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Hellow world</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    {isSubmitting && <div>Loading...</div>}
+      <form onSubmit={handleSubmit(onSubmit)}>
+      {/* register your input into the hook by invoking the "register" function */}
+      <input 
+      {...register("username", {
+        minLength: {value:3,message:"min 3 letter"},
+        maxLength: {value:8,message:"max 8 letter"},
+        required: {value:true,message
+        :"this field is required"},
+        })} type="text"/>
+      <div className="red">{errors.username ? errors.username.message : "hi"}</div>
+
+      
+      {/* include validation with required or other standard HTML validation rules */}
+      <input {...register("password", { 
+        required:{value:true,message:"this field is required"},
+        minLength:{value:8,message:"Password should be atleast 8 character long"} })} />
+      {/* errors will return when field validation fails  */}
+      {errors.password && <span>{errors.password.message}</span>}
+      
+      <input type="submit" disabled={isSubmitting}/>
+    </form>
     </>
   )
 }
