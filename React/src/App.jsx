@@ -1,41 +1,62 @@
+import React from 'react'
+import { useState,useRef,useEffect } from 'react'
 
-import { useForm } from "react-hook-form";
-function App() {
-  const { register, handleSubmit, formState: { errors,isSubmitting } } = useForm();
-  let delay = ((d)=>{
-    return new Promise((resolve,reject)=>{
-      
-      setTimeout(()=>{resolve()},d*3000);
-    })})
-    const onSubmit = async(data) => {
-      await delay(4);
-      console.log(data);}
+const App = () => {
+  let inputRef = useRef()
+  const [inputValue, setInputValue] = useState("")
+  let showingTodo = ()=>{
+    let value = inputRef.current.value.trim();
+    if (value === "") return;
+    setInputValue(value);
+    inputRef.current.value = "";
 
+  }
+  useEffect(() => {
+    if (inputValue.trim() === "") return; // Prevent empty todo from being added
+    let newElement = document.createElement("div");
+    newElement.classList = "border-2 border-white text-white p-2 mt-2";
+    let textDiv = document.createElement("div");
+    textDiv.textContent = inputValue;
+  
+    let editBtn = document.createElement("button");
+    editBtn.textContent = "✍";
+    editBtn.className = "bg-white mx-2 p-1 rounded-full";
+    editBtn.addEventListener("click", () => {
+      let newValue = prompt("Enter the new value");
+      if (newValue) textDiv.textContent = newValue;
+    });
+  
+    let deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑";
+    deleteBtn.className = "bg-white mx-2 p-1 rounded-full";
+    deleteBtn.addEventListener("click", () => {
+      newElement.remove();
+    });
+  
+    newElement.appendChild(textDiv);
+    newElement.appendChild(editBtn);
+    newElement.appendChild(deleteBtn);
+  
+    document.getElementById("mainDiv").appendChild(newElement);
+   
+  }, [inputValue])
+  
+  let update = ()=>{
+    let value = prompt("Enter the value")
+    setInputValue(value)
+  }
+document.body.className = "bg-gray-800"
   return (
-    <>
-    {isSubmitting && <div>Loading...</div>}
-      <form onSubmit={handleSubmit(onSubmit)}>
-      {/* register your input into the hook by invoking the "register" function */}
-      <input 
-      {...register("username", {
-        minLength: {value:3,message:"min 3 letter"},
-        maxLength: {value:8,message:"max 8 letter"},
-        required: {value:true,message
-        :"this field is required"},
-        })} type="text"/>
-      <div className="red">{errors.username ? errors.username.message : "hi"}</div>
+    <div className='flex flex-col items-center p-5'>
+      <h1 className='text-[35px] text-white font-bold'>Todo</h1>
+      <div><input type="text" ref={inputRef} className='bg-black text-white rounded-4xl p-2'/>
+      <button onClick={showingTodo} className='bg-white p-2 rounded-4xl '> Add Todo</button></div>
+      <div></div>
+      <div id="mainDiv">
 
+      </div>
       
-      {/* include validation with required or other standard HTML validation rules */}
-      <input {...register("password", { 
-        required:{value:true,message:"this field is required"},
-        minLength:{value:8,message:"Password should be atleast 8 character long"} })} />
-      {/* errors will return when field validation fails  */}
-      {errors.password && <span>{errors.password.message}</span>}
-      
-      <input type="submit" disabled={isSubmitting}/>
-    </form>
-    </>
+    </div>
   )
 }
 

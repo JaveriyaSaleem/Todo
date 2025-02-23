@@ -1,31 +1,33 @@
-import express from "express"
-import path from "path"
-const app = express()
-const port = process.env.PORT ||  8080
+import express from "express";
+import path from "path";
+const app = express();
+// import bodyParser from "body-parser";
+import cors from "cors";
 
-const __dirname = path.resolve()
+const port = process.env.PORT || 8080;
 
-app.use('/', express.static(path.join(__dirname, './React/dist')))
+// app.use(cors({origin: "http://localhost:5173", methods: ["POST", "GET"]}));
+// app.use(express.json());
+app.use(cors()) 
+app.use(express.json())
+const saveData = []
 
+//it's for built dist
+const __dirname = path.resolve();
 
+app.use("/", express.static(path.join(__dirname, "./React/dist"))); 
 
-app.get('/', (req, res) => {
-  res.send("get  chlrha ha")
-})
+app.get("/", (req, res) => {
+  res.send("get  chlrha ha");
+});
 
-app.get('/weather', (req, res) => {
-  res.json({ user: 'tobi' })
-})
-app.get('/weather/:cityName', (req, res) => {
-  res.send(req.params)
-})
-app.get('/weather/:cityName/:side', (req, res) => {
-  res.send(req.params)
-})
-
+app.post("/", (req, res) => {
+  console.log("POST request received:", req.body);
+  res.send("Hello World!");
+});
 
 
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Server running on port ${port}`);
+});
